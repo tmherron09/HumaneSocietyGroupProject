@@ -239,10 +239,24 @@ namespace HumaneSociety
         }
 
         // TODO: Misc Animal Things
-        internal static int GetCategoryId(string categoryName)
+        internal static int? GetCategoryId(string categoryName)
         {
-            
-            throw new NotImplementedException();
+            int categoryId;
+            try
+            {
+                categoryId = db.Categories.Where(c => c.Name.ToLower() == categoryName.ToLower()).Select(c => c.CategoryId).Single();
+            }
+            catch
+            {
+                UserInterface.DisplayUserOptions("Category not found. Please try again or type 'exit' to continue without adding a category/breed.");
+                string retryCategoryName = UserInterface.GetStringData("category/breed", "the name of the animal's");
+                if(retryCategoryName.ToLower() == "exit" || retryCategoryName.ToLower() == "e")
+                {
+                    return null;
+                }
+                return GetCategoryId(retryCategoryName);
+            }
+            return categoryId;
         }
 
         internal static Room GetRoom(int animalId)
