@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -172,10 +173,24 @@ namespace HumaneSociety
         }
         internal static void AddEmployee(Employee employee)
         {
-            
+
             db.Employees.InsertOnSubmit(employee);
             db.SubmitChanges();
         }
+
+        internal static Employee GetEmployeeByID(int id)
+        {
+            Employee employee = db.Employees.Where(e => e.EmployeeId == id).Single();
+            return employee;            
+        }
+
+
+        //internal static void RemoveEmployee(Employee employee)
+        //{
+        //    db.Employees.Except(e => e == employee);
+        //    db.SubmitChanges();
+        //}
+
 
         // TODO: Animal CRUD Operations
         internal static void AddAnimal(Animal animal)
