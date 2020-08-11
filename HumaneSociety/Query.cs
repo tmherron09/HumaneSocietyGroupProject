@@ -180,16 +180,16 @@ namespace HumaneSociety
 
         internal static Employee GetEmployeeByID(int id)
         {
-            Employee employee = db.Employees.Where(e => e.EmployeeId == id).Single();
+            Employee employee = db.Employees.Where(e => e.EmployeeNumber == id).SingleOrDefault();
             return employee;            
         }
 
 
-        //internal static void RemoveEmployee(Employee employee)
-        //{
-        //    db.Employees.Except(e => e == employee);
-        //    db.SubmitChanges();
-        //}
+        internal static void RemoveEmployee(Employee employee)
+        {
+            db.Employees.DeleteOnSubmit(employee);
+            db.SubmitChanges();
+        }
 
 
         // TODO: Animal CRUD Operations
