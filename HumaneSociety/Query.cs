@@ -168,8 +168,8 @@ namespace HumaneSociety
         internal static void RunEmployeeQueries(Employee employee, string crudOperation)
         {
             // Switch statement for CRUD
-
-            throw new NotImplementedException();
+            UpdateEmployee(employee);
+            //throw new NotImplementedException();
         }
         internal static void AddEmployee(Employee employee)
         {
@@ -187,15 +187,9 @@ namespace HumaneSociety
         internal static void UpdateEmployee(Employee employeeToUpdate)
         {
             Employee employeeInDb = null;
-            try
-            {
-                employeeInDb = Query.GetEmployeeByID(employeeToUpdate.EmployeeNumber);
-            }
-            catch (InvalidOperationException)
-            {
-                Console.WriteLine("No Employees have an Employee Number that matches.");
-                throw new InvalidOperationException();
-            }
+
+            // Throws exception if no employee is found.
+            employeeInDb = db.Employees.Where(e => e.EmployeeNumber == employeeToUpdate.EmployeeNumber).Single();
 
             employeeInDb.FirstName = employeeToUpdate.FirstName != "" ? employeeToUpdate.FirstName : employeeInDb.FirstName;
 
@@ -244,6 +238,7 @@ namespace HumaneSociety
         // TODO: Misc Animal Things
         internal static int GetCategoryId(string categoryName)
         {
+            
             throw new NotImplementedException();
         }
 
