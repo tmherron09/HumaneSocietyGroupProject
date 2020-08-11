@@ -168,8 +168,8 @@ namespace HumaneSociety
         internal static void RunEmployeeQueries(Employee employee, string crudOperation)
         {
             // Switch statement for CRUD
-            UpdateEmployee(employee);
-            //throw new NotImplementedException();
+            
+            throw new NotImplementedException();
         }
         internal static void AddEmployee(Employee employee)
         {
@@ -180,8 +180,8 @@ namespace HumaneSociety
 
         internal static Employee GetEmployeeByID(int? id)
         {
-            Employee employee = db.Employees.Where(e => e.EmployeeNumber == id).Single();
-            return employee;
+            Employee employee = db.Employees.Where(e => e.EmployeeNumber == id).SingleOrDefault();
+            return employee;            
         }
 
         internal static void UpdateEmployee(Employee employeeToUpdate)
@@ -211,12 +211,14 @@ namespace HumaneSociety
         // TODO: Animal CRUD Operations
         internal static void AddAnimal(Animal animal)
         {
-            throw new NotImplementedException();
+            db.Animals.InsertOnSubmit(animal);
+            db.SubmitChanges();
         }
 
         internal static Animal GetAnimalByID(int id)
         {
-            throw new NotImplementedException();
+            Animal animal = db.Animals.Where(a => a.AnimalId == id).SingleOrDefault();
+            return animal;
         }
 
         internal static void UpdateAnimal(int animalId, Dictionary<int, string> updates)
@@ -226,7 +228,8 @@ namespace HumaneSociety
 
         internal static void RemoveAnimal(Animal animal)
         {
-            throw new NotImplementedException();
+            db.Animals.DeleteOnSubmit(animal);
+            db.SubmitChanges();
         }
 
         // TODO: Animal Multi-Trait Search
