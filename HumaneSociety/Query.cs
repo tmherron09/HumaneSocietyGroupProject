@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -166,6 +167,8 @@ namespace HumaneSociety
         // TODO: Allow any of the CRUD operations to occur here
         internal static void RunEmployeeQueries(Employee employee, string crudOperation)
         {
+            // Switch statement for CRUD
+            
             throw new NotImplementedException();
         }
         internal static void AddEmployee(Employee employee)
@@ -182,10 +185,12 @@ namespace HumaneSociety
         }
 
 
-        //internal static void ReadingEmployeeInfo()
+        //internal static void RemoveEmployee(Employee employee)
         //{
-
+        //    db.Employees.Except(e => e == employee);
+        //    db.SubmitChanges();
         //}
+
 
         // TODO: Animal CRUD Operations
         internal static void AddAnimal(Animal animal)
