@@ -167,14 +167,14 @@ namespace HumaneSociety
         // TODO: Allow any of the CRUD operations to occur here
         internal static void RunEmployeeQueries(Employee employee, string crudOperation)
         {
-            switch(crudOperation)
+            switch (crudOperation)
             {
                 case "create":
                     AddEmployee(employee);
                     break;
                 case "read":
                     employee = GetEmployeeByID(employee.EmployeeNumber);
-                    if(employee == null)
+                    if (employee == null)
                     {
                         throw new NullReferenceException();
                     }
@@ -278,7 +278,7 @@ namespace HumaneSociety
                     default:
                         Console.WriteLine("Input was not recognized. Please try again.");
                         break;
-                }                
+                }
             }
             db.SubmitChanges();
         }
@@ -417,7 +417,13 @@ namespace HumaneSociety
 
         internal static void RemoveAdoption(int animalId, int clientId)
         {
-            throw new NotImplementedException();
+            Adoption adoptionToRemove = db.Adoptions.Where(a => a.AnimalId == animalId && a.ClientId == clientId).SingleOrDefault();
+            if(adoptionToRemove == null)
+            {
+                UserInterface.DisplayUserOptions("No Adoption matching these records found.");
+            }
+            db.Adoptions.DeleteOnSubmit(adoptionToRemove);
+            db.SubmitChanges();
         }
 
         // TODO: Shots Stuff
@@ -508,7 +514,7 @@ namespace HumaneSociety
             return shot;
         }
 
-        
+
 
 
     }
