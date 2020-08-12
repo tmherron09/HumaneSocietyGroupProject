@@ -353,9 +353,25 @@ namespace HumaneSociety
 
         }
 
-        internal static int GetDietPlanId(string dietPlanName)
+        internal static int? GetDietPlanId(string dietPlanName)
         {
-            throw new NotImplementedException();
+            int dietPlanId;
+            try
+            {
+                dietPlanId = db.DietPlans.Where(d => d.Name.ToLower() == dietPlanName.ToLower()).Select(d => d.DietPlanId).Single();
+            }
+            catch
+            {
+                Console.Clear();
+                UserInterface.DisplayUserOptions("Diet Plan not found. Please try again or type 'cancel' to continue without adding a Diet Plan for this animal.");
+                string retryDietPlanName = UserInterface.GetStringData("diet plan", "the name of the animal's");
+                if (retryDietPlanName.ToLower() == "cancel" || retryDietPlanName.ToLower() == "c")
+                {
+                    return null;
+                }
+                return GetDietPlanId(retryDietPlanName);
+            }
+            return dietPlanId;
         }
 
         // TODO: Adoption CRUD Operations
