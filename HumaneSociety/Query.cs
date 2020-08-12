@@ -168,7 +168,7 @@ namespace HumaneSociety
         internal static void RunEmployeeQueries(Employee employee, string crudOperation)
         {
             // Switch statement for CRUD
-            
+
             throw new NotImplementedException();
         }
         internal static void AddEmployee(Employee employee)
@@ -181,7 +181,7 @@ namespace HumaneSociety
         internal static Employee GetEmployeeByID(int? id)
         {
             Employee employee = db.Employees.Where(e => e.EmployeeNumber == id).SingleOrDefault();
-            return employee;            
+            return employee;
         }
 
         internal static void UpdateEmployee(Employee employeeToUpdate)
@@ -248,9 +248,10 @@ namespace HumaneSociety
             }
             catch
             {
+                Console.Clear();
                 UserInterface.DisplayUserOptions("Category not found. Please try again or type 'exit' to continue without adding a category/breed.");
                 string retryCategoryName = UserInterface.GetStringData("category/breed", "the name of the animal's");
-                if(retryCategoryName.ToLower() == "exit" || retryCategoryName.ToLower() == "e")
+                if (retryCategoryName.ToLower() == "exit" || retryCategoryName.ToLower() == "e")
                 {
                     return null;
                 }
@@ -261,7 +262,53 @@ namespace HumaneSociety
 
         internal static Room GetRoom(int animalId)
         {
-            throw new NotImplementedException();
+
+            Room roomFromDb = db.Rooms.Where(r => r.AnimalId == animalId).SingleOrDefault();
+            return roomFromDb;
+        }
+        internal static Room GetRoomEmployee(int animalId)
+        {
+            Room roomFromDb;
+            try
+            {
+                roomFromDb = db.Rooms.Where(r => r.AnimalId == animalId).Single();
+            }
+            catch
+            {
+                Console.Clear();
+                return AssignAnimalRoom(GetAnimalByID(animalId));
+            }
+            return roomFromDb;
+        }
+
+        private static Room AssignAnimalRoom(Animal animal)
+        {
+            Room newRoom = new Room();
+            
+            UserInterface.DisplayUserOptions($"Missing {animal.Name}'s room assignment.");
+            int roomNumber = UserInterface.GetIntegerData("room number", $"{animal.Name}'s");
+            if (db.Rooms.Select(r => r.RoomNumber).Contains(roomNumber) && db.Rooms.Where(r => r.RoomNumber == roomNumber).Select(r => r.AnimalId).SingleOrDefault() != null)
+            { 
+                    UserInterface.DisplayUserOptions($"This room is currently assigned. Please select another.");
+                    return AssignAnimalRoom(animal);
+                
+            }
+            else if (db.Rooms.Select(r => r.RoomNumber).Contains(roomNumber) && db.Rooms.Where(r => r.RoomNumber == roomNumber).Select(r => r.AnimalId).SingleOrDefault() == null)
+            {
+                newRoom = db.Rooms.Where(r => r.RoomNumber == roomNumber).Single();
+                newRoom.AnimalId = animal.AnimalId;
+            }
+            else
+            {
+                newRoom.RoomNumber = roomNumber;
+                newRoom.AnimalId = animal.AnimalId;
+                db.Rooms.InsertOnSubmit(newRoom);
+                
+            }
+            db.SubmitChanges();
+
+            return newRoom;
+
         }
 
         internal static int GetDietPlanId(string dietPlanName)
