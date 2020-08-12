@@ -140,7 +140,7 @@ namespace HumaneSociety
             switch (input)
             {
                 case 1:
-                    UserInterface.DisplayAnimalInfo(animal);
+                    UserInterface.DisplayAnimalInfoEmployee(animal);
                     Console.Clear();
                     break;
                 case 2:

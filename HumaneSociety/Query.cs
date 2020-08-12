@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace HumaneSociety
 {
     public static class Query
-    {        
+    {
         static HumaneSocietyDataContext db;
 
         static Query()
@@ -18,11 +18,11 @@ namespace HumaneSociety
 
         internal static List<USState> GetStates()
         {
-            List<USState> allStates = db.USStates.ToList();       
+            List<USState> allStates = db.USStates.ToList();
 
             return allStates;
         }
-            
+
         internal static Client GetClient(string userName, string password)
         {
             Client client = db.Clients.Where(c => c.UserName == userName && c.Password == password).Single();
@@ -56,7 +56,7 @@ namespace HumaneSociety
                 newAddress.AddressLine1 = streetAddress;
                 newAddress.City = null;
                 newAddress.USStateId = stateId;
-                newAddress.Zipcode = zipCode;                
+                newAddress.Zipcode = zipCode;
 
                 db.Addresses.InsertOnSubmit(newAddress);
                 db.SubmitChanges();
@@ -81,13 +81,13 @@ namespace HumaneSociety
             {
                 clientFromDb = db.Clients.Where(c => c.ClientId == clientWithUpdates.ClientId).Single();
             }
-            catch(InvalidOperationException e)
+            catch (InvalidOperationException e)
             {
                 Console.WriteLine("No clients have a ClientId that matches the Client passed in.");
                 Console.WriteLine("No update have been made.");
                 return;
             }
-            
+
             // update clientFromDb information with the values on clientWithUpdates (aside from address)
             clientFromDb.FirstName = clientWithUpdates.FirstName;
             clientFromDb.LastName = clientWithUpdates.LastName;
@@ -102,13 +102,13 @@ namespace HumaneSociety
             Address updatedAddress = db.Addresses.Where(a => a.AddressLine1 == clientAddress.AddressLine1 && a.USStateId == clientAddress.USStateId && a.Zipcode == clientAddress.Zipcode).FirstOrDefault();
 
             // if the address isn't found in the Db, create and insert it
-            if(updatedAddress == null)
+            if (updatedAddress == null)
             {
                 Address newAddress = new Address();
                 newAddress.AddressLine1 = clientAddress.AddressLine1;
                 newAddress.City = null;
                 newAddress.USStateId = clientAddress.USStateId;
-                newAddress.Zipcode = clientAddress.Zipcode;                
+                newAddress.Zipcode = clientAddress.Zipcode;
 
                 db.Addresses.InsertOnSubmit(newAddress);
                 db.SubmitChanges();
@@ -118,11 +118,11 @@ namespace HumaneSociety
 
             // attach AddressId to clientFromDb.AddressId
             clientFromDb.AddressId = updatedAddress.AddressId;
-            
+
             // submit changes
             db.SubmitChanges();
         }
-        
+
         internal static void AddUsernameAndPassword(Employee employee)
         {
             Employee employeeFromDb = db.Employees.Where(e => e.EmployeeId == employee.EmployeeId).FirstOrDefault();
@@ -163,12 +163,12 @@ namespace HumaneSociety
 
 
         //// TODO Items: ////
-        
+
         // TODO: Allow any of the CRUD operations to occur here
         internal static void RunEmployeeQueries(Employee employee, string crudOperation)
         {
             // Switch statement for CRUD
-            
+
             throw new NotImplementedException();
         }
         internal static void AddEmployee(Employee employee)
@@ -178,18 +178,34 @@ namespace HumaneSociety
             db.SubmitChanges();
         }
 
-        internal static Employee GetEmployeeByID(int id)
+        internal static Employee GetEmployeeByID(int? id)
         {
             Employee employee = db.Employees.Where(e => e.EmployeeNumber == id).SingleOrDefault();
-            return employee;            
+            return employee;
         }
 
-
-        internal static void RemoveEmployee(Employee employee)
+        internal static void UpdateEmployee(Employee employeeToUpdate)
         {
-            db.Employees.DeleteOnSubmit(employee);
+            Employee employeeInDb = null;
+
+            // Throws exception if no employee is found.
+            employeeInDb = db.Employees.Where(e => e.EmployeeNumber == employeeToUpdate.EmployeeNumber).Single();
+
+            employeeInDb.FirstName = employeeToUpdate.FirstName != "" ? employeeToUpdate.FirstName : employeeInDb.FirstName;
+
+            employeeInDb.LastName = employeeToUpdate.LastName != "" ? employeeToUpdate.LastName : employeeInDb.LastName;
+
+            employeeInDb.Email = employeeToUpdate.Email != "" ? employeeToUpdate.Email : employeeInDb.Email;
+
             db.SubmitChanges();
+
         }
+
+        //internal static void RemoveEmployee(Employee employee)
+        //{
+        //    db.Employees.Except(e => e == employee);
+        //    db.SubmitChanges();
+        //}
 
 
         // TODO: Animal CRUD Operations
@@ -206,7 +222,7 @@ namespace HumaneSociety
         }
 
         internal static void UpdateAnimal(int animalId, Dictionary<int, string> updates)
-        {            
+        {
             throw new NotImplementedException();
         }
 
@@ -215,25 +231,91 @@ namespace HumaneSociety
             db.Animals.DeleteOnSubmit(animal);
             db.SubmitChanges();
         }
-        
+
         // TODO: Animal Multi-Trait Search
         internal static IQueryable<Animal> SearchForAnimalsByMultipleTraits(Dictionary<int, string> updates) // parameter(s)?
         {
             throw new NotImplementedException();
         }
-         
+
         // TODO: Misc Animal Things
-        internal static int GetCategoryId(string categoryName)
+        internal static int? GetCategoryId(string categoryName)
         {
+<<<<<<< HEAD
             throw new NotImplementedException();
             //Category category = db.Categories.Where(a => a.CategoryId == categoryName(GetCategoryId));            
+=======
+            int categoryId;
+            try
+            {
+                categoryId = db.Categories.Where(c => c.Name.ToLower() == categoryName.ToLower()).Select(c => c.CategoryId).Single();
+            }
+            catch
+            {
+                Console.Clear();
+                UserInterface.DisplayUserOptions("Category not found. Please try again or type 'exit' to continue without adding a category/breed.");
+                string retryCategoryName = UserInterface.GetStringData("category/breed", "the name of the animal's");
+                if (retryCategoryName.ToLower() == "exit" || retryCategoryName.ToLower() == "e")
+                {
+                    return null;
+                }
+                return GetCategoryId(retryCategoryName);
+            }
+            return categoryId;
+>>>>>>> 652784b44729bb6f0d4689bba8327ecb612a48c1
         }
 
         internal static Room GetRoom(int animalId)
         {
-            throw new NotImplementedException();
+
+            Room roomFromDb = db.Rooms.Where(r => r.AnimalId == animalId).SingleOrDefault();
+            return roomFromDb;
         }
-        
+        internal static Room GetRoomEmployee(int animalId)
+        {
+            Room roomFromDb;
+            try
+            {
+                roomFromDb = db.Rooms.Where(r => r.AnimalId == animalId).Single();
+            }
+            catch
+            {
+                Console.Clear();
+                return AssignAnimalRoom(GetAnimalByID(animalId));
+            }
+            return roomFromDb;
+        }
+
+        private static Room AssignAnimalRoom(Animal animal)
+        {
+            Room newRoom = new Room();
+            
+            UserInterface.DisplayUserOptions($"Missing {animal.Name}'s room assignment.");
+            int roomNumber = UserInterface.GetIntegerData("room number", $"{animal.Name}'s");
+            if (db.Rooms.Select(r => r.RoomNumber).Contains(roomNumber) && db.Rooms.Where(r => r.RoomNumber == roomNumber).Select(r => r.AnimalId).SingleOrDefault() != null)
+            { 
+                    UserInterface.DisplayUserOptions($"This room is currently assigned. Please select another.");
+                    return AssignAnimalRoom(animal);
+                
+            }
+            else if (db.Rooms.Select(r => r.RoomNumber).Contains(roomNumber) && db.Rooms.Where(r => r.RoomNumber == roomNumber).Select(r => r.AnimalId).SingleOrDefault() == null)
+            {
+                newRoom = db.Rooms.Where(r => r.RoomNumber == roomNumber).Single();
+                newRoom.AnimalId = animal.AnimalId;
+            }
+            else
+            {
+                newRoom.RoomNumber = roomNumber;
+                newRoom.AnimalId = animal.AnimalId;
+                db.Rooms.InsertOnSubmit(newRoom);
+                
+            }
+            db.SubmitChanges();
+
+            return newRoom;
+
+        }
+
         internal static int GetDietPlanId(string dietPlanName)
         {
             throw new NotImplementedException();
