@@ -191,15 +191,13 @@ namespace HumaneSociety
             }
         }
         internal static void AddEmployee(Employee employee)
-        {
-
+        { 
             db.Employees.InsertOnSubmit(employee);
             db.SubmitChanges();
         }
 
         internal static Employee GetEmployeeByID(int? id)
         {
-
             Employee employee = db.Employees.Where(e => e.EmployeeNumber == id).SingleOrDefault();
             return employee;
         }
@@ -223,7 +221,6 @@ namespace HumaneSociety
 
         internal static void RemoveEmployee(Employee employee)
         {
-            db.Employees.DeleteOnSubmit(employee);
             Employee employeeToRemove = GetEmployeeByID(employee.EmployeeNumber);
             db.Employees.DeleteOnSubmit(employeeToRemove);
             db.SubmitChanges();
@@ -412,9 +409,9 @@ namespace HumaneSociety
             catch
             {
                 Console.Clear();
-                UserInterface.DisplayUserOptions("Category not found. Please try again or type 'exit' to continue without adding a category/breed.");
+                UserInterface.DisplayUserOptions("Category not found. Please try again or type 'cancel' to continue without adding a category/breed.");
                 string retryCategoryName = UserInterface.GetStringData("category/breed", "the name of the animal's");
-                if (retryCategoryName.ToLower() == "exit" || retryCategoryName.ToLower() == "e")
+                if (retryCategoryName.ToLower() == "cancel" || retryCategoryName.ToLower() == "c")
                 {
                     return null;
                 }
@@ -455,7 +452,6 @@ namespace HumaneSociety
             {
                 UserInterface.DisplayUserOptions($"This room is currently assigned. Please select another.");
                 return AssignAnimalRoom(animal);
-
             }
             else if (db.Rooms.Select(r => r.RoomNumber).Contains(roomNumber) && db.Rooms.Where(r => r.RoomNumber == roomNumber).Select(r => r.AnimalId).SingleOrDefault() == null)
             {
@@ -467,7 +463,6 @@ namespace HumaneSociety
                 newRoom.RoomNumber = roomNumber;
                 newRoom.AnimalId = animal.AnimalId;
                 db.Rooms.InsertOnSubmit(newRoom);
-
             }
             db.SubmitChanges();
 
