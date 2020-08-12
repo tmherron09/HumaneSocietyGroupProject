@@ -290,9 +290,114 @@ namespace HumaneSociety
         }
 
         // TODO: Animal Multi-Trait Search
-        internal static IQueryable<Animal> SearchForAnimalsByMultipleTraits(Dictionary<int, string> updates) // parameter(s)?
+
+        /// <summary>
+        /// Searches for any animal matching all traits.
+        /// </summary>
+        /// <param name="updates">Dictionary of traits to match against.</param>
+        /// <returns>All animals matching all criteria.</returns>
+        internal static IQueryable<Animal> SearchForAnimalsByMultipleTraits(Dictionary<int, string> updates) 
         {
-            throw new NotImplementedException();
+            List<Animal> availableAnimals = new List<Animal>();
+            List<Animal> listToReturn = null;
+
+            foreach (var pair in updates)
+            {
+                availableAnimals.Clear();
+                switch (pair.Key)
+                {
+                    case 1:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.CategoryId == GetCategoryId(pair.Value)));
+                        break;
+                    case 2:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Name.ToLower() == pair.Value.ToLower()));
+                        break;
+                    case 3:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Age.ToString() == pair.Value));
+                        break;
+                    case 4:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Demeanor.ToLower() == pair.Value.ToLower()));
+                        break;
+                    case 5:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.KidFriendly.ToString() == pair.Value));
+                        break;
+                    case 6:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.PetFriendly.ToString() == pair.Value));
+                        break;
+                    case 7:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Weight.ToString() == pair.Value));
+                        break;
+                    case 8:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.AnimalId.ToString() == pair.Value));
+                        break;
+                    default:
+                        Console.WriteLine("Input was not recognized. Please try again.");
+                        break;
+                }
+                if (listToReturn == null)
+                {
+                    listToReturn = new List<Animal>();
+                    listToReturn.AddRange(availableAnimals);
+                }
+                else
+                {
+                    for (int i = 0; i < listToReturn.Count; i++)
+                    {
+                        if (!availableAnimals.Contains(listToReturn[i]))
+                        {
+                            listToReturn.Remove(listToReturn[i]);
+                        }
+                    }
+                }
+            }
+
+            return listToReturn.AsQueryable();
+        }
+        /// <summary>
+        /// Searches for any animals that meat ANY of the criteria.
+        /// </summary>
+        /// <param name="updates">Dictionary of traits to search for.</param>
+        /// <returns>Any animal matchings one of the traits.</returns>
+        internal static IQueryable<Animal> SearchForAnimalsByMultipleTraitsAny(Dictionary<int, string> updates)
+        {
+
+            List<Animal> availableAnimals = new List<Animal>();
+
+            foreach (var pair in updates)
+            {
+                switch (pair.Key)
+                {
+                    case 1:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.CategoryId == GetCategoryId(pair.Value)));
+                        break;
+                    case 2:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Name.ToLower() == pair.Value.ToLower()));
+                        break;
+                    case 3:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Age.ToString() == pair.Value));
+                        break;
+                    case 4:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Demeanor.ToLower() == pair.Value.ToLower()));
+                        break;
+                    case 5:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.KidFriendly.ToString() == pair.Value));
+                        break;
+                    case 6:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.PetFriendly.ToString() == pair.Value));
+                        break;
+                    case 7:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.Weight.ToString() == pair.Value));
+                        break;
+                    case 8:
+                        availableAnimals.AddRange(db.Animals.Where(c => c.AnimalId.ToString() == pair.Value));
+                        break;
+                    default:
+                        Console.WriteLine("Input was not recognized. Please try again.");
+                        break;
+                }
+            }
+            availableAnimals = availableAnimals.Distinct().ToList();
+            return availableAnimals.AsQueryable();
         }
 
         // TODO: Misc Animal Things
