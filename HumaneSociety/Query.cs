@@ -167,9 +167,28 @@ namespace HumaneSociety
         // TODO: Allow any of the CRUD operations to occur here
         internal static void RunEmployeeQueries(Employee employee, string crudOperation)
         {
-            // Switch statement for CRUD
-
-            throw new NotImplementedException();
+            switch(crudOperation)
+            {
+                case "create":
+                    AddEmployee(employee);
+                    break;
+                case "read":
+                    employee = GetEmployeeByID(employee.EmployeeNumber);
+                    if(employee == null)
+                    {
+                        throw new NullReferenceException();
+                    }
+                    // Todo create UI DisplayerEmployee Info.
+                    break;
+                case "update":
+                    UpdateEmployee(employee);
+                    break;
+                case "delete":
+                    RemoveEmployee(employee);
+                    break;
+                default:
+                    throw new Exception("Invalid CRUD operation parameter.");
+            }
         }
         internal static void AddEmployee(Employee employee)
         {
