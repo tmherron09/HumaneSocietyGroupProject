@@ -180,6 +180,7 @@ namespace HumaneSociety
 
         internal static Employee GetEmployeeByID(int? id)
         {
+
             Employee employee = db.Employees.Where(e => e.EmployeeNumber == id).SingleOrDefault();
             return employee;
         }
@@ -204,6 +205,8 @@ namespace HumaneSociety
         internal static void RemoveEmployee(Employee employee)
         {
             db.Employees.DeleteOnSubmit(employee);
+            Employee employeeToRemove = GetEmployeeByID(employee.EmployeeNumber);
+            db.Employees.DeleteOnSubmit(employeeToRemove);
             db.SubmitChanges();
         }
 
@@ -223,7 +226,42 @@ namespace HumaneSociety
 
         internal static void UpdateAnimal(int animalId, Dictionary<int, string> updates)
         {
-            throw new NotImplementedException();
+            Animal animalInDb = null;
+            animalInDb = db.Animals.Where(a => a.AnimalId == animalId).SingleOrDefault();
+            foreach (var pair in updates)
+            {
+                switch (pair.Key)
+                {
+                    case 1:
+                        animalInDb.CategoryId = GetCategoryId(pair.Value);
+                        break;
+                    case 2:
+                        animalInDb.Name = pair.Value;
+                        break;
+                    case 3:
+                        animalInDb.Age = pair.Key;
+                        break;
+                    case 4:
+                        animalInDb.Demeanor = pair.Value;
+                        break;
+                    case 5:
+                        animalInDb.KidFriendly = pair.Value == "True" ? true : false;
+                        break;
+                    case 6:
+                        animalInDb.PetFriendly = pair.Value == "True" ? true : false;
+                        break;
+                    case 7:
+                        animalInDb.Weight = pair.Key;
+                        break;
+                    case 8:
+                        Console.WriteLine("Can't update.");
+                        break;
+                    default:
+                        Console.WriteLine("Input was not recognized. Please try again.");
+                        break;
+                }                
+            }
+            db.SubmitChanges();
         }
 
         internal static void RemoveAnimal(Animal animal)
@@ -261,7 +299,6 @@ namespace HumaneSociety
                 return GetCategoryId(retryCategoryName);
             }
             return categoryId;
-
         }
 
         internal static Room GetRoom(int animalId)
@@ -344,7 +381,8 @@ namespace HumaneSociety
         // TODO: Shots Stuff
         internal static IQueryable<AnimalShot> GetShots(Animal animal)
         {
-            throw new NotImplementedException();
+            var shotRecords = db.AnimalShots.Where(s => s.AnimalId == animal.AnimalId);
+            return shotRecords;
         }
 
         internal static void UpdateShot(string shotName, Animal animal)

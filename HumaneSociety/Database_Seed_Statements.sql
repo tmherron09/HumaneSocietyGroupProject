@@ -105,19 +105,19 @@ Values ('high risk', 'special blend', 1);
 -- Employees
 
 INSERT INTO Employees
-Values ('Arnold', 'Rimmer', 'AceRimmer', 'kipper', 2789562, 'AJRimmer@JMC.com');
+Values ('Arnold', 'Rimmer', 'AceRimmer', 'kipper', 1001, 'AJRimmer@JMC.com');
 
 INSERT INTO Employees
-Values ('John', 'Wick', 'DogLover5', 'billAndted', 5551989, 'Excellent@Adventure.com');
+Values ('John', 'Wick', 'DogLover5', 'billAndted', 1002, 'Excellent@Adventure.com');
 
 INSERT INTO Employees
-Values ('Tim', 'Herron', 'Timsy', 'Magnus', 9177306, 'tmherron09@gmail.com');
+Values ('Tim', 'Herron', 'Timsy', 'Magnus', 1003, 'tmherron09@gmail.com');
 
 INSERT INTO Employees
-Values ('Choua', 'Cha', 'Chouac1', 'Chacha123', 4444444, 'chouac100@gmail.com');
+Values ('Choua', 'Cha', 'Chouac1', 'Chacha123', 1004, 'chouac100@gmail.com');
 
 INSERT INTO Employees
-Values ('Charles', 'Barkley', 'CharlieLakers', 'StillMVP', 1239999, 'charlesbarkley123@gmail.com');
+Values ('Charles', 'Barkley', 'CharlieLakers', 'StillMVP', 105, 'charlesbarkley123@gmail.com');
 
 
 
@@ -204,7 +204,31 @@ Values ('Brechar', 'Miknevdav', 'dCCInstructor20', 'csharprules', 4, 'programmer
 INSERT INTO Clients
 Values ('Normal', 'Bates', 'loveyourmother', 'whitepine', 1, 'Magic@House.com');
 
+-- Shots
+INSERT INTO Shots
+VALUES ('Rabies'), --any
+      ('DHPP'), --dogs
+	  ('Bordetella'), --dogs
+	  ('FVRCP'), -- cats
+	  ('DIVA'); -- farm animals
 
+-- Animal Shot Records
 
+INSERT INTO AnimalShots (AnimalId, ShotId)
+SELECT  Animals.AnimalId, Shots.ShotId
+FROM Animals CROSS JOIN Shots
+WHERE Animals.CategoryId = 1
+AND Shots.Name = 'DHPP';
 
+INSERT INTO AnimalShots (AnimalId, ShotId)
+SELECT  Animals.AnimalId, Shots.ShotId
+FROM Animals CROSS JOIN Shots
+WHERE Animals.CategoryId = 2
+AND Shots.Name = 'FVRCP';
+
+INSERT INTO AnimalShots (AnimalId, ShotId)
+SELECT  Animals.AnimalId, Shots.ShotId
+FROM Animals CROSS JOIN Shots
+WHERE Animals.CategoryId IN (1, 2, 3, 4)
+AND Shots.Name = 'Rabies';
 
