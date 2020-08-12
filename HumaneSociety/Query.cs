@@ -305,6 +305,7 @@ namespace HumaneSociety
             Room roomFromDb = db.Rooms.Where(r => r.AnimalId == animalId).SingleOrDefault();
             return roomFromDb;
         }
+
         internal static Room GetRoomEmployee(int animalId)
         {
             Room roomFromDb;
@@ -323,14 +324,14 @@ namespace HumaneSociety
         private static Room AssignAnimalRoom(Animal animal)
         {
             Room newRoom = new Room();
-            
+
             UserInterface.DisplayUserOptions($"Missing {animal.Name}'s room assignment.");
             int roomNumber = UserInterface.GetIntegerData("room number", $"{animal.Name}'s");
             if (db.Rooms.Select(r => r.RoomNumber).Contains(roomNumber) && db.Rooms.Where(r => r.RoomNumber == roomNumber).Select(r => r.AnimalId).SingleOrDefault() != null)
-            { 
-                    UserInterface.DisplayUserOptions($"This room is currently assigned. Please select another.");
-                    return AssignAnimalRoom(animal);
-                
+            {
+                UserInterface.DisplayUserOptions($"This room is currently assigned. Please select another.");
+                return AssignAnimalRoom(animal);
+
             }
             else if (db.Rooms.Select(r => r.RoomNumber).Contains(roomNumber) && db.Rooms.Where(r => r.RoomNumber == roomNumber).Select(r => r.AnimalId).SingleOrDefault() == null)
             {
@@ -342,7 +343,7 @@ namespace HumaneSociety
                 newRoom.RoomNumber = roomNumber;
                 newRoom.AnimalId = animal.AnimalId;
                 db.Rooms.InsertOnSubmit(newRoom);
-                
+
             }
             db.SubmitChanges();
 
@@ -350,9 +351,25 @@ namespace HumaneSociety
 
         }
 
-        internal static int GetDietPlanId(string dietPlanName)
+        internal static int? GetDietPlanId(string dietPlanName)
         {
-            throw new NotImplementedException();
+            int dietPlanId;
+            try
+            {
+                dietPlanId = db.DietPlans.Where(d => d.Name.ToLower() == dietPlanName.ToLower()).Select(d => d.DietPlanId).Single();
+            }
+            catch
+            {
+                Console.Clear();
+                UserInterface.DisplayUserOptions("Diet Plan not found. Please try again or type 'cancel' to continue without adding a Diet Plan for this animal.");
+                string retryDietPlanName = UserInterface.GetStringData("diet plan", "the name of the animal's");
+                if (retryDietPlanName.ToLower() == "cancel" || retryDietPlanName.ToLower() == "c")
+                {
+                    return null;
+                }
+                return GetDietPlanId(retryDietPlanName);
+            }
+            return dietPlanId;
         }
 
         // TODO: Adoption CRUD Operations
@@ -385,7 +402,87 @@ namespace HumaneSociety
 
         internal static void UpdateShot(string shotName, Animal animal)
         {
-            throw new NotImplementedException();
+            Shot shot;
+            try
+            {
+                shot = GetShot(shotName);
+            }
+            catch
+            {
+                UserInterface.DisplayUserOptions($"{shotName} is not in the database. What would you like to do?");
+                shot = GetShotMenu(shotName);
+            }
+            if (shot == null)
+            {
+                UserInterface.DisplayUserOptions("Shot record not updated.");
+                return;
+            }
+            else if (db.AnimalShots.Any(r => r.AnimalId == animal.AnimalId && r.ShotId == shot.ShotId))
+            {
+                // Constraint of the database, an animal can only have a shot once as they are both PK.
+                // Currently, Shots table references the Shot name not a specific shot injected.
+                UserInterface.DisplayUserOptions("Shot record not updated. Animal has already recieved this shot and records are up-to-date.");
+                return;
+            }
+            AnimalShot newRecord = new AnimalShot();
+            newRecord.AnimalId = animal.AnimalId;
+            newRecord.ShotId = shot.ShotId;
+            newRecord.DateReceived = DateTime.Now;
+            db.AnimalShots.InsertOnSubmit(newRecord);
+            db.SubmitChanges();
+            UserInterface.DisplayUserOptions("Shot record successfully updated.");
         }
+
+        private static Shot GetShotMenu(string shotName)
+        {
+            Shot shotToReturn;
+            List<string> options = new List<string>() { $"Shot: {shotName}", "1) Add shot to database", "2) Re-Enter shot name.", "3) Cancel" };
+            UserInterface.DisplayUserOptions(options);
+            string input = UserInterface.GetUserInput();
+            switch (input)
+            {
+                case "1":
+                    shotToReturn = AddShot(shotName);
+                    break;
+                case "2":
+                    shotName = UserInterface.GetStringData("name", "the shot's");
+                    shotToReturn = GetShot(shotName);
+                    break;
+                case "3":
+                    shotToReturn = null;
+                    break;
+                default:
+                    UserInterface.DisplayUserOptions("Invalid Input");
+                    return GetShotMenu(shotName);
+            }
+            return shotToReturn;
+        }
+        private static Shot AddShot(string shotName)
+        {
+            Shot newShot = new Shot();
+
+            if (db.Shots.Any(s => s.Name.ToLower() == shotName.ToLower()))
+            {
+                UserInterface.DisplayUserOptions("Shot is already in database.");
+                return GetShotMenu(shotName);
+            }
+            else
+            {
+                newShot.Name = shotName;
+                db.Shots.InsertOnSubmit(newShot);
+                db.SubmitChanges();
+            }
+            return newShot;
+        }
+
+        private static Shot GetShot(string shotName)
+        {
+            Shot shot = db.Shots.Where(s => s.Name.ToLower() == shotName.ToLower()).Single();
+            return shot;
+        }
+
+        
+
+
     }
 }
