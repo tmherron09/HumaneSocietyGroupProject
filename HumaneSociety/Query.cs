@@ -280,8 +280,6 @@ namespace HumaneSociety
         internal static int? GetCategoryId(string categoryName)
         {
 
-            //throw new NotImplementedException();
-
             int categoryId;
             try
             {
