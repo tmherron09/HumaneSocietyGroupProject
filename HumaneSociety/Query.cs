@@ -204,6 +204,7 @@ namespace HumaneSociety
 
         internal static void RemoveEmployee(Employee employee)
         {
+            db.Employees.DeleteOnSubmit(employee);
             Employee employeeToRemove = GetEmployeeByID(employee.EmployeeNumber);
             db.Employees.DeleteOnSubmit(employeeToRemove);
             db.SubmitChanges();
@@ -225,7 +226,42 @@ namespace HumaneSociety
 
         internal static void UpdateAnimal(int animalId, Dictionary<int, string> updates)
         {
-            throw new NotImplementedException();
+            Animal animalInDb = null;
+            animalInDb = db.Animals.Where(a => a.AnimalId == animalId).SingleOrDefault();
+            foreach (var pair in updates)
+            {
+                switch (pair.Key)
+                {
+                    case 1:
+                        animalInDb.CategoryId = GetCategoryId(pair.Value);
+                        break;
+                    case 2:
+                        animalInDb.Name = pair.Value;
+                        break;
+                    case 3:
+                        animalInDb.Age = pair.Key;
+                        break;
+                    case 4:
+                        animalInDb.Demeanor = pair.Value;
+                        break;
+                    case 5:
+                        animalInDb.KidFriendly = pair.Value == "True" ? true : false;
+                        break;
+                    case 6:
+                        animalInDb.PetFriendly = pair.Value == "True" ? true : false;
+                        break;
+                    case 7:
+                        animalInDb.Weight = pair.Key;
+                        break;
+                    case 8:
+                        Console.WriteLine("Can't update.");
+                        break;
+                    default:
+                        Console.WriteLine("Input was not recognized. Please try again.");
+                        break;
+                }                
+            }
+            db.SubmitChanges();
         }
 
         internal static void RemoveAnimal(Animal animal)
@@ -243,6 +279,8 @@ namespace HumaneSociety
         // TODO: Misc Animal Things
         internal static int? GetCategoryId(string categoryName)
         {
+
+            //throw new NotImplementedException();
 
             int categoryId;
             try

@@ -11,8 +11,11 @@ namespace HumaneSociety
         static void Main(string[] args)
         {
             //PointOfEntry.Run();
+            HumaneSocietyDataContext db = new HumaneSocietyDataContext();
+            Animal animal = db.Animals.Where(a => a.AnimalId == 4).Single();
+            UserEmployee employee = new UserEmployee();
+            employee.UpdateAnimal(animal);
 
-            Employee employee = Query.GetEmployeeByID(1);
             
         }
     }
