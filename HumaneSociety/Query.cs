@@ -201,11 +201,11 @@ namespace HumaneSociety
 
         }
 
-        //internal static void RemoveEmployee(Employee employee)
-        //{
-        //    db.Employees.Except(e => e == employee);
-        //    db.SubmitChanges();
-        //}
+        internal static void RemoveEmployee(Employee employee)
+        {
+            db.Employees.DeleteOnSubmit(employee);
+            db.SubmitChanges();
+        }
 
 
         // TODO: Animal CRUD Operations
@@ -241,10 +241,9 @@ namespace HumaneSociety
         // TODO: Misc Animal Things
         internal static int? GetCategoryId(string categoryName)
         {
-<<<<<<< HEAD
-            throw new NotImplementedException();
-            //Category category = db.Categories.Where(a => a.CategoryId == categoryName(GetCategoryId));            
-=======
+
+            //throw new NotImplementedException();
+
             int categoryId;
             try
             {
@@ -262,7 +261,7 @@ namespace HumaneSociety
                 return GetCategoryId(retryCategoryName);
             }
             return categoryId;
->>>>>>> 652784b44729bb6f0d4689bba8327ecb612a48c1
+
         }
 
         internal static Room GetRoom(int animalId)
