@@ -226,8 +226,9 @@ namespace HumaneSociety
         internal static int GetCategoryId(string categoryName)
         {
             throw new NotImplementedException();
+            //Category category = db.Categories.Where(a => a.CategoryId == categoryName(GetCategoryId));            
         }
-        
+
         internal static Room GetRoom(int animalId)
         {
             throw new NotImplementedException();
