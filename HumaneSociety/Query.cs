@@ -191,7 +191,7 @@ namespace HumaneSociety
             }
         }
         internal static void AddEmployee(Employee employee)
-        { 
+        {
             db.Employees.InsertOnSubmit(employee);
             db.SubmitChanges();
         }
@@ -222,6 +222,7 @@ namespace HumaneSociety
         internal static void RemoveEmployee(Employee employee)
         {
             Employee employeeToRemove = GetEmployeeByID(employee.EmployeeNumber);
+
             db.Employees.DeleteOnSubmit(employeeToRemove);
             db.SubmitChanges();
         }
@@ -282,9 +283,38 @@ namespace HumaneSociety
 
         internal static void RemoveAnimal(Animal animal)
         {
+            RemoveAnimalRoomReferences(animal.AnimalId);
+            RemoveAnimalShotsReferences(animal);
+            RemoveAnimalAdoptionReferences(animal);
+
             db.Animals.DeleteOnSubmit(animal);
             db.SubmitChanges();
         }
+        private static void RemoveAnimalRoomReferences(int animalId)
+        {
+            Room roomRefToDelete = GetRoom(animalId);
+            if (roomRefToDelete != null)
+            {
+                roomRefToDelete.AnimalId = null;
+            }
+        }
+        private static void RemoveAnimalShotsReferences(Animal animal)
+        {
+            var animalShots = GetShots(animal);
+            foreach (var record in animalShots)
+            {
+                db.AnimalShots.DeleteOnSubmit(record);
+            }
+        }
+        private static void RemoveAnimalAdoptionReferences(Animal animal)
+        {
+            var pendingAdoptions = db.Adoptions.Where(a => a.AnimalId == animal.AnimalId);
+            foreach (var adoption in pendingAdoptions)
+            {
+                db.Adoptions.DeleteOnSubmit(adoption);
+            }
+        }
+
 
         // TODO: Animal Multi-Trait Search
 
@@ -293,7 +323,7 @@ namespace HumaneSociety
         /// </summary>
         /// <param name="updates">Dictionary of traits to match against.</param>
         /// <returns>All animals matching all criteria.</returns>
-        internal static IQueryable<Animal> SearchForAnimalsByMultipleTraits(Dictionary<int, string> updates) 
+        internal static IQueryable<Animal> SearchForAnimalsByMultipleTraits(Dictionary<int, string> updates)
         {
             List<Animal> availableAnimals = new List<Animal>();
             List<Animal> listToReturn = null;
@@ -518,13 +548,14 @@ namespace HumaneSociety
         internal static void RemoveAdoption(int animalId, int clientId)
         {
             Adoption adoptionToRemove = db.Adoptions.Where(a => a.AnimalId == animalId && a.ClientId == clientId).SingleOrDefault();
-            if(adoptionToRemove == null)
+            if (adoptionToRemove == null)
             {
                 UserInterface.DisplayUserOptions("No Adoption matching these records found.");
             }
             db.Adoptions.DeleteOnSubmit(adoptionToRemove);
             db.SubmitChanges();
         }
+        
 
         // TODO: Shots Stuff
         internal static IQueryable<AnimalShot> GetShots(Animal animal)
@@ -548,6 +579,7 @@ namespace HumaneSociety
             if (shot == null)
             {
                 UserInterface.DisplayUserOptions("Shot record not updated.");
+                Console.ReadLine();
                 return;
             }
             else if (db.AnimalShots.Any(r => r.AnimalId == animal.AnimalId && r.ShotId == shot.ShotId))
@@ -555,6 +587,7 @@ namespace HumaneSociety
                 // Constraint of the database, an animal can only have a shot once as they are both PK.
                 // Currently, Shots table references the Shot name not a specific shot injected.
                 UserInterface.DisplayUserOptions("Shot record not updated. Animal has already recieved this shot and records are up-to-date.");
+                Console.ReadLine();
                 return;
             }
             AnimalShot newRecord = new AnimalShot();
@@ -564,6 +597,7 @@ namespace HumaneSociety
             db.AnimalShots.InsertOnSubmit(newRecord);
             db.SubmitChanges();
             UserInterface.DisplayUserOptions("Shot record successfully updated.");
+            Console.ReadLine();
         }
 
         private static Shot GetShotMenu(string shotName)
@@ -599,12 +633,9 @@ namespace HumaneSociety
                 UserInterface.DisplayUserOptions("Shot is already in database.");
                 return GetShotMenu(shotName);
             }
-            else
-            {
-                newShot.Name = shotName;
-                db.Shots.InsertOnSubmit(newShot);
-                db.SubmitChanges();
-            }
+            newShot.Name = shotName;
+            db.Shots.InsertOnSubmit(newShot);
+            db.SubmitChanges();
             return newShot;
         }
 
