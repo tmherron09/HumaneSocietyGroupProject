@@ -223,6 +223,13 @@ namespace HumaneSociety
         {
             Employee employeeToRemove = GetEmployeeByID(employee.EmployeeNumber);
 
+            // remove foreign keys.
+            var referencesToRemove = db.Animals.Where(a => a.EmployeeId == employeeToRemove.EmployeeId);
+            foreach(Animal animal in referencesToRemove)
+            {
+                animal.EmployeeId = null;
+            }
+
             db.Employees.DeleteOnSubmit(employeeToRemove);
             db.SubmitChanges();
         }
@@ -256,7 +263,7 @@ namespace HumaneSociety
                         animalInDb.Name = pair.Value;
                         break;
                     case 3:
-                        animalInDb.Age = pair.Key;
+                        animalInDb.Age = Convert.ToInt32(pair.Value);
                         break;
                     case 4:
                         animalInDb.Demeanor = pair.Value;
@@ -268,7 +275,7 @@ namespace HumaneSociety
                         animalInDb.PetFriendly = pair.Value == "True" ? true : false;
                         break;
                     case 7:
-                        animalInDb.Weight = pair.Key;
+                        animalInDb.Weight = Convert.ToInt32(pair.Value);
                         break;
                     case 8:
                         Console.WriteLine("Can't update.");
@@ -368,13 +375,14 @@ namespace HumaneSociety
                 }
                 else
                 {
-                    for (int i = 0; i < listToReturn.Count; i++)
-                    {
-                        if (!availableAnimals.Contains(listToReturn[i]))
-                        {
-                            listToReturn.Remove(listToReturn[i]);
-                        }
-                    }
+                    //for (int i = 0; i < listToReturn.Count; i++)
+                    //{
+                    //    if (!availableAnimals.Contains(listToReturn[i]))
+                    //    {
+                    //        listToReturn.Remove(listToReturn[i]);
+                    //    }
+                    //}
+                    listToReturn = listToReturn.Intersect(availableAnimals).ToList();
                 }
             }
 
