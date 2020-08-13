@@ -395,7 +395,6 @@ namespace HumaneSociety
         /// <returns>Any animal matchings one of the traits.</returns>
         internal static IQueryable<Animal> SearchForAnimalsByMultipleTraitsAny(Dictionary<int, string> updates)
         {
-
             List<Animal> availableAnimals = new List<Animal>();
 
             foreach (var pair in updates)
@@ -433,6 +432,7 @@ namespace HumaneSociety
             }
             availableAnimals = availableAnimals.Distinct().ToList();
             return availableAnimals.AsQueryable();
+
         }
 
         // TODO: Misc Animal Things
